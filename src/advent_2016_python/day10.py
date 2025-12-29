@@ -6,7 +6,7 @@ class BotSystem:
     def give_bot(self, b: str, v: int):
         self.bots.setdefault(b, []).append(v)
 
-    def give_output(self, o: str, v: int):
+    def set_output(self, o: str, v: int):
         self.outputs[o] = v
 
     def init_rule(self, b: str, type0, id0, type1, id1):
@@ -33,15 +33,15 @@ class BotSystem:
         if len(vals) != 2:
             raise AssertionError(f"Bot {b} should have two values but instead has values {vals}")
 
+        def give(t, id, v):
+            if t == "bot":
+                self.give_bot(id, v)
+            else:
+                self.set_output(id, v)
+
         type0, id0, type1, id1 = self.rules[b]
-        if type0 == 'bot':
-            self.give_bot(id0, vals[0])
-        else:
-            self.give_output(id0, vals[0])
-        if type1 == 'bot':
-            self.give_bot(id1, vals[1])
-        else:
-            self.give_output(id1, vals[1])
+        give(type0, id0, vals[0])
+        give(type1, id1, vals[1])
 
         del self.bots[b]
         self.responsibilities[(vals[0], vals[1])] = b
